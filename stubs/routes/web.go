@@ -1,7 +1,6 @@
 package routes
 
 import (
-	"context"
 	"encoding/json"
 	nethttp "net/http"
 
@@ -17,62 +16,62 @@ func Web() {
 	// ------------------
 	facades.Route.Prefix("group1").Middleware(TestContextMiddleware()).Group(func(route1 route.Route) {
 		route1.Prefix("group2").Middleware(TestContextMiddleware1()).Group(func(route2 route.Route) {
-			route2.Get("/middleware/{id}", func(request http.Request) {
-				facades.Response.Success().Json(http.Json{
-					"id":   request.Input("id"),
-					"ctx":  request.Context().Value("ctx").(string),
-					"ctx1": request.Context().Value("ctx1").(string),
+			route2.Get("/middleware/{id}", func(ctx http.Context) {
+				ctx.Response().Success().Json(http.Json{
+					"id":   ctx.Request().Input("id"),
+					"ctx":  ctx.Value("ctx").(string),
+					"ctx1": ctx.Value("ctx1").(string),
 				})
 			})
 		})
-		route1.Middleware(TestContextMiddleware2()).Get("/middleware/{id}", func(request http.Request) {
-			facades.Response.Success().Json(http.Json{
-				"id":   request.Input("id"),
-				"ctx":  request.Context().Value("ctx").(string),
-				"ctx2": request.Context().Value("ctx2").(string),
+		route1.Middleware(TestContextMiddleware2()).Get("/middleware/{id}", func(ctx http.Context) {
+			ctx.Response().Success().Json(http.Json{
+				"id":   ctx.Request().Input("id"),
+				"ctx":  ctx.Value("ctx").(string),
+				"ctx2": ctx.Value("ctx2").(string),
 			})
 		})
 	})
 
-	facades.Route.Get("/input/{id}", func(request http.Request) {
-		facades.Response.Json(nethttp.StatusOK, http.Json{
-			"id": request.Input("id"),
+	facades.Route.Get("/input/{id}", func(ctx http.Context) {
+		ctx.Response().Json(nethttp.StatusOK, http.Json{
+			"id": ctx.Request().Input("id"),
 		})
 	})
 
-	facades.Route.Post("/input/{id}", func(request http.Request) {
-		facades.Response.Success().Json(http.Json{
-			"id": request.Input("id"),
+	facades.Route.Post("/input/{id}", func(ctx http.Context) {
+		ctx.Response().Success().Json(http.Json{
+			"id": ctx.Request().Input("id"),
 		})
 	})
 
-	facades.Route.Put("/input/{id}", func(request http.Request) {
-		facades.Response.Success().Json(http.Json{
-			"id": request.Input("id"),
+	facades.Route.Put("/input/{id}", func(ctx http.Context) {
+		ctx.Response().Success().Json(http.Json{
+			"id": ctx.Request().Input("id"),
 		})
 	})
 
-	facades.Route.Delete("/input/{id}", func(request http.Request) {
-		facades.Response.Success().Json(http.Json{
-			"id": request.Input("id"),
+	facades.Route.Delete("/input/{id}", func(ctx http.Context) {
+		ctx.Response().Success().Json(http.Json{
+			"id": ctx.Request().Input("id"),
 		})
 	})
 
-	facades.Route.Options("/input/{id}", func(request http.Request) {
-		facades.Response.Success().Json(http.Json{
-			"id": request.Input("id"),
+	facades.Route.Options("/input/{id}", func(ctx http.Context) {
+		ctx.Response().Success().Json(http.Json{
+			"id": ctx.Request().Input("id"),
 		})
 	})
 
-	facades.Route.Patch("/input/{id}", func(request http.Request) {
-		facades.Response.Success().Json(http.Json{
-			"id": request.Input("id"),
+	facades.Route.Patch("/input/{id}", func(ctx http.Context) {
+		ctx.Response().Success().Json(http.Json{
+			"id": ctx.Request().Input("id"),
 		})
 	})
 
-	facades.Route.Any("/any/{id}", func(request http.Request) {
-		facades.Response.Success().Json(http.Json{
-			"id": request.Input("id"),
+	facades.Route.Any("/any/{id}", func(ctx http.Context) {
+		ctx.Response().Success().Json(http.Json{
+			"id": ctx.Request().Input("id"),
 		})
 	})
 
@@ -80,23 +79,23 @@ func Web() {
 	facades.Route.StaticFile("static-file", "./resources/logo.png")
 	facades.Route.StaticFS("static-fs", nethttp.Dir("./public"))
 
-	facades.Route.Middleware(TestAbortMiddleware()).Get("/middleware/{id}", func(request http.Request) {
-		facades.Response.Success().Json(http.Json{
-			"id": request.Input("id"),
+	facades.Route.Middleware(TestAbortMiddleware()).Get("/middleware/{id}", func(ctx http.Context) {
+		ctx.Response().Success().Json(http.Json{
+			"id": ctx.Request().Input("id"),
 		})
 	})
 
-	facades.Route.Middleware(TestContextMiddleware(), TestContextMiddleware1()).Get("/middlewares/{id}", func(request http.Request) {
-		facades.Response.Success().Json(http.Json{
-			"id":   request.Input("id"),
-			"ctx":  request.Context().Value("ctx"),
-			"ctx1": request.Context().Value("ctx1"),
+	facades.Route.Middleware(TestContextMiddleware(), TestContextMiddleware1()).Get("/middlewares/{id}", func(ctx http.Context) {
+		ctx.Response().Success().Json(http.Json{
+			"id":   ctx.Request().Input("id"),
+			"ctx":  ctx.Value("ctx"),
+			"ctx1": ctx.Value("ctx1"),
 		})
 	})
 
-	facades.Route.Prefix("prefix1").Prefix("prefix2").Get("input/{id}", func(request http.Request) {
-		facades.Response.Success().Json(http.Json{
-			"id": request.Input("id"),
+	facades.Route.Prefix("prefix1").Prefix("prefix2").Get("input/{id}", func(ctx http.Context) {
+		ctx.Response().Success().Json(http.Json{
+			"id": ctx.Request().Input("id"),
 		})
 	})
 
@@ -104,50 +103,50 @@ func Web() {
 	// Test Request
 	// ------------------
 	facades.Route.Prefix("request").Group(func(route route.Route) {
-		route.Get("/get/{id}", func(request http.Request) {
-			facades.Response.Success().Json(http.Json{
-				"id":       request.Input("id"),
-				"name":     request.Query("name", "Hello"),
-				"header":   request.Header("Hello", "World"),
-				"method":   request.Method(),
-				"path":     request.Path(),
-				"url":      request.Url(),
-				"full_url": request.FullUrl(),
-				"ip":       request.Ip(),
+		route.Get("/get/{id}", func(ctx http.Context) {
+			ctx.Response().Success().Json(http.Json{
+				"id":       ctx.Request().Input("id"),
+				"name":     ctx.Request().Query("name", "Hello"),
+				"header":   ctx.Request().Header("Hello", "World"),
+				"method":   ctx.Request().Method(),
+				"path":     ctx.Request().Path(),
+				"url":      ctx.Request().Url(),
+				"full_url": ctx.Request().FullUrl(),
+				"ip":       ctx.Request().Ip(),
 			})
 		})
-		route.Get("/headers", func(request http.Request) {
-			str, _ := json.Marshal(request.Headers())
-			facades.Response.Success().String(string(str))
+		route.Get("/headers", func(ctx http.Context) {
+			str, _ := json.Marshal(ctx.Request().Headers())
+			ctx.Response().Success().String(string(str))
 		})
-		route.Post("/post", func(request http.Request) {
-			facades.Response.Success().Json(http.Json{
-				"name": request.Form("name", "Hello"),
+		route.Post("/post", func(ctx http.Context) {
+			ctx.Response().Success().Json(http.Json{
+				"name": ctx.Request().Form("name", "Hello"),
 			})
 		})
-		route.Post("/bind", func(request http.Request) {
+		route.Post("/bind", func(ctx http.Context) {
 			type Test struct {
 				Name string
 			}
 			var test Test
-			_ = request.Bind(&test)
-			facades.Response.Success().Json(http.Json{
+			_ = ctx.Request().Bind(&test)
+			ctx.Response().Success().Json(http.Json{
 				"name": test.Name,
 			})
 		})
-		route.Post("/file", func(request http.Request) {
-			file, err := request.File("file")
+		route.Post("/file", func(ctx http.Context) {
+			file, err := ctx.Request().File("file")
 			if err != nil {
-				facades.Response.Success().String("get file error")
+				ctx.Response().Success().String("get file error")
 				return
 			}
 			path := "./resources/test.png"
 			if err := file.Store(path); err != nil {
-				facades.Response.Success().String("store file error: " + err.Error())
+				ctx.Response().Success().String("store file error: " + err.Error())
 				return
 			}
 
-			facades.Response.Success().Json(http.Json{
+			ctx.Response().Success().Json(http.Json{
 				"exist": supportfile.Exist(path),
 			})
 		})
@@ -157,67 +156,61 @@ func Web() {
 	// Test Response
 	// ------------------
 	facades.Route.Prefix("response").Group(func(route route.Route) {
-		route.Get("/json", func(request http.Request) {
-			facades.Response.Json(nethttp.StatusOK, http.Json{
+		route.Get("/json", func(ctx http.Context) {
+			ctx.Response().Json(nethttp.StatusOK, http.Json{
 				"id": "1",
 			})
 		})
-		route.Get("/string", func(request http.Request) {
-			facades.Response.String(nethttp.StatusCreated, "Goravel")
+		route.Get("/string", func(ctx http.Context) {
+			ctx.Response().String(nethttp.StatusCreated, "Goravel")
 		})
-		route.Get("/success/json", func(request http.Request) {
-			facades.Response.Success().Json(http.Json{
+		route.Get("/success/json", func(ctx http.Context) {
+			ctx.Response().Success().Json(http.Json{
 				"id": "1",
 			})
 		})
-		route.Get("/success/string", func(request http.Request) {
-			facades.Response.Success().String("Goravel")
+		route.Get("/success/string", func(ctx http.Context) {
+			ctx.Response().Success().String("Goravel")
 		})
-		route.Get("/file", func(request http.Request) {
-			facades.Response.File("./resources/logo.png")
+		route.Get("/file", func(ctx http.Context) {
+			ctx.Response().File("./resources/logo.png")
 		})
-		route.Get("/download", func(request http.Request) {
-			facades.Response.Download("./resources/logo.png", "1.png")
+		route.Get("/download", func(ctx http.Context) {
+			ctx.Response().Download("./resources/logo.png", "1.png")
 		})
-		route.Get("/header", func(request http.Request) {
-			facades.Response.Header("Hello", "goravel").String(nethttp.StatusOK, "Goravel")
+		route.Get("/header", func(ctx http.Context) {
+			ctx.Response().Header("Hello", "goravel").String(nethttp.StatusOK, "Goravel")
 		})
 	})
 }
 
 func TestAbortMiddleware() http.Middleware {
-	return func(request http.Request) {
-		request.AbortWithStatus(nethttp.StatusNonAuthoritativeInfo)
+	return func(ctx http.Context) {
+		ctx.Request().AbortWithStatus(nethttp.StatusNonAuthoritativeInfo)
 		return
 	}
 }
 
 func TestContextMiddleware() http.Middleware {
-	return func(request http.Request) {
-		ctx := request.Context()
-		ctx = context.WithValue(ctx, "ctx", "Goravel")
-		request.WithContext(ctx)
+	return func(ctx http.Context) {
+		ctx.WithValue("ctx", "Goravel")
 
-		request.Next()
+		ctx.Request().Next()
 	}
 }
 
 func TestContextMiddleware1() http.Middleware {
-	return func(request http.Request) {
-		ctx := request.Context()
-		ctx = context.WithValue(ctx, "ctx1", "Hello")
-		request.WithContext(ctx)
+	return func(ctx http.Context) {
+		ctx.WithValue("ctx1", "Hello")
 
-		request.Next()
+		ctx.Request().Next()
 	}
 }
 
 func TestContextMiddleware2() http.Middleware {
-	return func(request http.Request) {
-		ctx := request.Context()
-		ctx = context.WithValue(ctx, "ctx2", "World")
-		request.WithContext(ctx)
+	return func(ctx http.Context) {
+		ctx.WithValue("ctx2", "World")
 
-		request.Next()
+		ctx.Request().Next()
 	}
 }

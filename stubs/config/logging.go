@@ -74,7 +74,7 @@ func (h *Hook) Levels() []log.Level {
 }
 
 // Fire 当触发时执行的逻辑
-func (h *Hook) Fire(entry *log.Entry) error {
+func (h *Hook) Fire(entry log.Entry) error {
 	logPath := facades.Config.GetString(h.channel + ".path")
 	err := os.MkdirAll(path.Dir(logPath), os.ModePerm)
 	if err != nil {
