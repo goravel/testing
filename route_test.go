@@ -52,8 +52,7 @@ func TestRoute(t *testing.T) {
 			name:       "Options",
 			method:     "OPTIONS",
 			url:        "/input/1",
-			expectCode: http.StatusOK,
-			expectBody: "{\"id\":\"1\"}",
+			expectCode: http.StatusNoContent,
 		},
 		{
 			name:       "Patch",
@@ -94,8 +93,7 @@ func TestRoute(t *testing.T) {
 			name:       "Any Options",
 			method:     "OPTIONS",
 			url:        "/any/1",
-			expectCode: http.StatusOK,
-			expectBody: "{\"id\":\"1\"}",
+			expectCode: http.StatusNoContent,
 		},
 		{
 			name:       "Any Patch",

@@ -27,6 +27,10 @@ func (s *MailTestSuite) SetupTest() {
 }
 
 func (s *MailTestSuite) TestSendMail() {
+	if facades.Config.GetString("mail.host") == "" {
+		return
+	}
+
 	t := s.T()
 	assert.Nil(t, facades.Mail.To([]string{facades.Config.Env("MAIL_TO").(string)}).
 		Cc([]string{facades.Config.Env("MAIL_CC").(string)}).
@@ -37,6 +41,10 @@ func (s *MailTestSuite) TestSendMail() {
 }
 
 func (s *MailTestSuite) TestSendMailWithFrom() {
+	if facades.Config.GetString("mail.host") == "" {
+		return
+	}
+
 	t := s.T()
 	assert.Nil(t, facades.Mail.From(mail.From{Address: facades.Config.GetString("mail.from.address"), Name: facades.Config.GetString("mail.from.name")}).
 		To([]string{facades.Config.Env("MAIL_TO").(string)}).
@@ -48,6 +56,10 @@ func (s *MailTestSuite) TestSendMailWithFrom() {
 }
 
 func (s *MailTestSuite) TestQueueMail() {
+	if facades.Config.GetString("mail.host") == "" {
+		return
+	}
+
 	t := s.T()
 	ctx, _ := context.WithTimeout(context.Background(), 3*time.Second)
 
