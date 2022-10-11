@@ -13,5 +13,5 @@ echo "✅ Copy testing file"
 go mod tidy
 echo "✅ go mod"
 echo "Testing"
-go test -v ./testing/...
+go test ./testing/...
 echo "✅ Complete"
