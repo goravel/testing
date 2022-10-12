@@ -83,6 +83,23 @@ func (s *OrmTestSuite) TestFirstOrCreate() {
 	clearData(t)
 }
 
+func (s *OrmTestSuite) TestDistinct() {
+	t := s.T()
+	user := models.User{Name: "user", Avatar: "avatar"}
+	assert.Nil(t, facades.Orm.Query().Create(&user))
+	assert.True(t, user.ID == 1)
+
+	user1 := models.User{Name: "user", Avatar: "avatar1"}
+	assert.Nil(t, facades.Orm.Query().Create(&user1))
+	assert.True(t, user1.ID == 2)
+
+	var users []models.User
+	assert.Nil(t, facades.Orm.Query().Distinct("name").Find(&users))
+	assert.Equal(t, 1, len(users))
+
+	clearData(t)
+}
+
 func (s *OrmTestSuite) TestWhere() {
 	t := s.T()
 	user := models.User{Name: "user", Avatar: "avatar"}
