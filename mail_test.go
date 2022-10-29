@@ -5,12 +5,12 @@ import (
 	"testing"
 	"time"
 
+	"goravel/bootstrap"
+
 	"github.com/goravel/framework/contracts/mail"
 	"github.com/goravel/framework/facades"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/suite"
-
-	"goravel/bootstrap"
 )
 
 type MailTestSuite struct {

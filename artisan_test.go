@@ -2,17 +2,17 @@ package testing
 
 import (
 	"fmt"
-	"github.com/stretchr/testify/suite"
-	"goravel/bootstrap"
 	"io/ioutil"
-
 	"strings"
 	"testing"
 	"time"
 
+	"goravel/bootstrap"
+
 	"github.com/goravel/framework/facades"
 	"github.com/goravel/framework/support/file"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/suite"
 )
 
 type ArtisanTestSuite struct {

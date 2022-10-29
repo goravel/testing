@@ -8,14 +8,14 @@ import (
 	"testing"
 	"time"
 
+	"goravel/bootstrap"
+	"goravel/testing/resources/events"
+
 	contractevents "github.com/goravel/framework/contracts/event"
 	"github.com/goravel/framework/facades"
 	"github.com/goravel/framework/support/file"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/suite"
-
-	"goravel/bootstrap"
-	"goravel/testing/resources/events"
 )
 
 type EventTestSuite struct {

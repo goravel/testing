@@ -3,11 +3,11 @@ package console
 import (
 	"time"
 
+	"goravel/testing/resources/commands"
+
 	"github.com/goravel/framework/contracts/console"
 	"github.com/goravel/framework/contracts/schedule"
 	"github.com/goravel/framework/facades"
-
-	"goravel/testing/resources/commands"
 )
 
 type Kernel struct {

@@ -1,12 +1,13 @@
 package testing
 
 import (
-	"github.com/stretchr/testify/suite"
-	"goravel/bootstrap"
 	"testing"
+
+	"goravel/bootstrap"
 
 	"github.com/goravel/framework/facades"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/suite"
 )
 
 type ConfigTestSuite struct {

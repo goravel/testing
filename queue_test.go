@@ -8,14 +8,14 @@ import (
 	"testing"
 	"time"
 
+	"goravel/bootstrap"
+	"goravel/testing/resources/jobs"
+
 	"github.com/goravel/framework/contracts/queue"
 	"github.com/goravel/framework/facades"
 	"github.com/goravel/framework/support/file"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/suite"
-
-	"goravel/bootstrap"
-	"goravel/testing/resources/jobs"
 )
 
 type QueueTestSuite struct {

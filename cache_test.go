@@ -1,13 +1,14 @@
 package testing
 
 import (
-	"github.com/stretchr/testify/suite"
-	"goravel/bootstrap"
 	"testing"
 	"time"
 
+	"goravel/bootstrap"
+
 	"github.com/goravel/framework/facades"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/suite"
 )
 
 type CacheTestSuite struct {
@@ -43,6 +44,30 @@ func (s *CacheTestSuite) TestGet() {
 	}).(string))
 	assert.True(t, facades.Cache.Forget("name"))
 	assert.True(t, facades.Cache.Flush())
+}
+
+func (s *CacheTestSuite) TestGetBool() {
+	t := s.T()
+
+	assert.Equal(t, true, facades.Cache.GetBool("test-get-bool", true))
+	assert.Nil(t, facades.Cache.Put("test-get-bool", true, 2*time.Second))
+	assert.Equal(t, true, facades.Cache.GetBool("test-get-bool", false))
+}
+
+func (s *CacheTestSuite) TestGetInt() {
+	t := s.T()
+
+	assert.Equal(t, 2, facades.Cache.GetInt("test-get-int", 2))
+	assert.Nil(t, facades.Cache.Put("test-get-int", 3, 2*time.Second))
+	assert.Equal(t, 3, facades.Cache.GetInt("test-get-int", 2))
+}
+
+func (s *CacheTestSuite) TestGetString() {
+	t := s.T()
+
+	assert.Equal(t, "2", facades.Cache.GetString("test-get-string", "2"))
+	assert.Nil(t, facades.Cache.Put("test-get-string", "3", 2*time.Second))
+	assert.Equal(t, "3", facades.Cache.GetString("test-get-string", "2"))
 }
 
 func (s *CacheTestSuite) TestAdd() {
@@ -138,11 +163,26 @@ type Store struct {
 }
 
 //Get Retrieve an item from the cache by key.
-func (r *Store) Get(key string, defaults interface{}) interface{} {
-	return defaults
+func (r *Store) Get(key string, def interface{}) interface{} {
+	return def
 }
 
-//Has Determine if an item exists in the cache.
+//Get Retrieve an item from the cache by key.
+func (r *Store) GetInt(key string, def int) int {
+	return def
+}
+
+//Get Retrieve an item from the cache by key.
+func (r *Store) GetBool(key string, def bool) bool {
+	return def
+}
+
+//Get Retrieve an item from the cache by key.
+func (r *Store) GetString(key string, def string) string {
+	return def
+}
+
+//Has Check an item exists in the cache.
 func (r *Store) Has(key string) bool {
 	return true
 }
@@ -153,8 +193,8 @@ func (r *Store) Put(key string, value interface{}, seconds time.Duration) error 
 }
 
 //Pull Retrieve an item from the cache and delete it.
-func (r *Store) Pull(key string, defaults interface{}) interface{} {
-	return defaults
+func (r *Store) Pull(key string, def interface{}) interface{} {
+	return def
 }
 
 //Add Store an item in the cache if the key does not exist.

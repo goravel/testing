@@ -1,17 +1,18 @@
 package testing
 
 import (
+	"context"
 	"fmt"
 	"testing"
 	"time"
+
+	"goravel/bootstrap"
 
 	"github.com/goravel/framework/facades"
 	supportfile "github.com/goravel/framework/support/file"
 	"github.com/goravel/framework/testing/file"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/suite"
-
-	"goravel/bootstrap"
 )
 
 type LogTestSuite struct {
@@ -56,16 +57,6 @@ func (s *LogTestSuite) TestLog() {
 	}
 }
 
-func (s *LogTestSuite) TestLogFatal() {
-	t := s.T()
-	assert.NotPanics(t, func() {
-		facades.Log.Testing(true)
-		facades.Log.Fatal("Goravel")
-		facades.Log.Fatalf("%s Goravel", "Hello")
-		facades.Log.Testing(false)
-	})
-}
-
 func (s *LogTestSuite) TestLogPanic() {
 	t := s.T()
 	assert.Panics(t, func() {
@@ -74,4 +65,11 @@ func (s *LogTestSuite) TestLogPanic() {
 	assert.Panics(t, func() {
 		facades.Log.Panicf("%s Goravel", "Hello")
 	})
+}
+
+func (s *LogTestSuite) TestWithContext() {
+	ctx := context.Background()
+	ctx = context.WithValue(ctx, "hello", "goravel")
+	facades.Log.WithContext(ctx).Debug("Goravel")
+	assert.True(s.T(), supportfile.Contain("storage/logs/test.log", "context=goravel level=debug"))
 }

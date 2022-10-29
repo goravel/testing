@@ -52,7 +52,6 @@ func init() {
 type Logger struct {
 }
 
-// Handle 传入通道配置路径
 func (logger *Logger) Handle(channel string) (log.Hook, error) {
 	return &Hook{channel: channel}, nil
 }
@@ -61,7 +60,6 @@ type Hook struct {
 	channel string
 }
 
-// Levels 要监控的等级
 func (h *Hook) Levels() []log.Level {
 	return []log.Level{
 		log.DebugLevel,
@@ -73,7 +71,6 @@ func (h *Hook) Levels() []log.Level {
 	}
 }
 
-// Fire 当触发时执行的逻辑
 func (h *Hook) Fire(entry log.Entry) error {
 	logPath := facades.Config.GetString(h.channel + ".path")
 	err := os.MkdirAll(path.Dir(logPath), os.ModePerm)
@@ -88,7 +85,11 @@ func (h *Hook) Fire(entry log.Entry) error {
 	defer file.Close()
 
 	write := bufio.NewWriter(file)
-	write.WriteString(fmt.Sprintf("level=%v time=%v message=%s\n", entry.GetLevel(), entry.GetTime(), entry.GetMessage()))
+	if entry.Context() == nil {
+		write.WriteString(fmt.Sprintf("level=%v time=%v message=%s\n", entry.Level(), entry.Time(), entry.Message()))
+	} else {
+		write.WriteString(fmt.Sprintf("context=%v level=%v time=%v message=%s\n", entry.Context().Value("hello"), entry.Level(), entry.Time(), entry.Message()))
+	}
 	write.Flush()
 
 	return nil

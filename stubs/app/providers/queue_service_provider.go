@@ -1,10 +1,10 @@
 package providers
 
 import (
+	"goravel/testing/resources/jobs"
+
 	"github.com/goravel/framework/contracts/queue"
 	"github.com/goravel/framework/facades"
-
-	"goravel/testing/resources/jobs"
 )
 
 type QueueServiceProvider struct {

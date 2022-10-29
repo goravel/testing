@@ -2,7 +2,6 @@ package testing
 
 import (
 	"bytes"
-	"goravel/bootstrap"
 	"io"
 	"mime/multipart"
 	"net/http"
@@ -11,6 +10,8 @@ import (
 	"path/filepath"
 	"strings"
 	"testing"
+
+	"goravel/bootstrap"
 
 	"github.com/goravel/framework/facades"
 	"github.com/goravel/framework/support/file"
