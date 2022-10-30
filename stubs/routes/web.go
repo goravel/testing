@@ -99,6 +99,12 @@ func Web() {
 		})
 	})
 
+	facades.Route.Get("/global-middleware", func(ctx http.Context) {
+		ctx.Response().Json(nethttp.StatusOK, http.Json{
+			"global": ctx.Value("global"),
+		})
+	})
+
 	// ------------------
 	// Test Request
 	// ------------------

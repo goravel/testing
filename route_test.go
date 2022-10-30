@@ -13,9 +13,9 @@ import (
 
 func TestRoute(t *testing.T) {
 	bootstrap.Boot()
-
 	tests := []struct {
 		name       string
+		setup      func(req *http.Request)
 		method     string
 		url        string
 		expectCode int
@@ -53,7 +53,7 @@ func TestRoute(t *testing.T) {
 			name:       "Options",
 			method:     "OPTIONS",
 			url:        "/input/1",
-			expectCode: http.StatusNoContent,
+			expectCode: http.StatusOK,
 		},
 		{
 			name:       "Patch",
@@ -91,7 +91,11 @@ func TestRoute(t *testing.T) {
 			expectBody: "{\"id\":\"1\"}",
 		},
 		{
-			name:       "Any Options",
+			name: "Any Options",
+			setup: func(req *http.Request) {
+				req.Header.Set("Origin", "http://127.0.0.1")
+				req.Header.Set("Access-Control-Request-Method", "GET")
+			},
 			method:     "OPTIONS",
 			url:        "/any/1",
 			expectCode: http.StatusNoContent,
@@ -155,11 +159,21 @@ func TestRoute(t *testing.T) {
 			expectCode: http.StatusOK,
 			expectBody: "{\"ctx\":\"Goravel\",\"ctx2\":\"World\",\"id\":\"1\"}",
 		},
+		{
+			name:       "Global Middleware",
+			method:     "GET",
+			url:        "/global-middleware",
+			expectCode: http.StatusOK,
+			expectBody: "{\"global\":\"goravel\"}",
+		},
 	}
 
 	for _, test := range tests {
 		w := httptest.NewRecorder()
 		req, _ := http.NewRequest(test.method, test.url, nil)
+		if test.setup != nil {
+			test.setup(req)
+		}
 		facades.Route.ServeHTTP(w, req)
 
 		if test.expectBody != "" {
