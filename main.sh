@@ -14,4 +14,7 @@ go mod tidy
 echo "✅ go mod"
 echo "Testing"
 go test ./testing/...
-echo "✅ Complete"
+echo "✅ Tested"
+cd ..
+rm -rf goravel
+echo "✅ Cleared"

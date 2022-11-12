@@ -30,5 +30,5 @@ func (s *ConfigTestSuite) TestConfig() {
 	assert.Equal(t, true, facades.Config.GetBool("app.debug", false))
 	assert.Equal(t, 587, facades.Config.GetInt("mail.port", 123))
 	assert.Equal(t, "Goravel", facades.Config.Env("APP_NAME", "laravel").(string))
-	assert.Equal(t, "Goravel", facades.Config.Env("GRPC_HOST", "Goravel").(string))
+	assert.Equal(t, "127.0.0.1:3001", facades.Config.Env("GRPC_HOST", "Goravel").(string))
 }
