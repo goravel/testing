@@ -35,7 +35,7 @@ func TestSchedule(t *testing.T) {
 
 	time.Sleep(time.Duration(120+5+60-second) * time.Second)
 	log := fmt.Sprintf("storage/logs/goravel-%s.log", time.Now().Format("2006-01-02"))
-	assert.True(t, file.Exist(log))
+	assert.True(t, file.Exists(log))
 	data, err := ioutil.ReadFile(log)
 	assert.Nil(t, err)
 	assert.Equal(t, 3, strings.Count(string(data), "schedule closure immediately"))

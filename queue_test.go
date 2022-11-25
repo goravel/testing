@@ -36,7 +36,7 @@ func (s *QueueTestSuite) SetupTest() {
 func (s *QueueTestSuite) TestMakeJob() {
 	t := s.T()
 	Equal(t, "make:job TestJob", "Job created successfully")
-	assert.True(t, file.Exist("./app/jobs/test_job.go"))
+	assert.True(t, file.Exists("./app/jobs/test_job.go"))
 	assert.True(t, file.Remove("./app"))
 }
 
@@ -48,7 +48,7 @@ func (s *QueueTestSuite) TestSyncQueue() {
 	}).DispatchSync())
 
 	log := fmt.Sprintf("storage/logs/goravel-%s.log", time.Now().Format("2006-01-02"))
-	assert.True(t, file.Exist(log))
+	assert.True(t, file.Exists(log))
 	data, err := ioutil.ReadFile(log)
 	assert.Nil(t, err)
 	assert.True(t, strings.Contains(string(data), "test_sync_job: TestSyncQueue, 1"))
@@ -77,7 +77,7 @@ func (s *QueueTestSuite) TestDefaultAsyncQueue() {
 
 	time.Sleep(3 * time.Second)
 	log := fmt.Sprintf("storage/logs/goravel-%s.log", time.Now().Format("2006-01-02"))
-	assert.True(t, file.Exist(log))
+	assert.True(t, file.Exists(log))
 	data, err := ioutil.ReadFile(log)
 	assert.Nil(t, err)
 	assert.True(t, strings.Contains(string(data), "test_async_job: TestDefaultAsyncQueue, 1"))
@@ -111,7 +111,7 @@ func (s *QueueTestSuite) TestCustomAsyncQueue() {
 
 	time.Sleep(3 * time.Second)
 	log := fmt.Sprintf("storage/logs/goravel-%s.log", time.Now().Format("2006-01-02"))
-	assert.True(t, file.Exist(log))
+	assert.True(t, file.Exists(log))
 	data, err := ioutil.ReadFile(log)
 	assert.Nil(t, err)
 	assert.True(t, strings.Contains(string(data), "test_async_job: TestCustomAsyncQueue, 1"))
@@ -145,7 +145,7 @@ func (s *QueueTestSuite) TestErrorAsyncQueue() {
 
 	time.Sleep(3 * time.Second)
 	log := fmt.Sprintf("storage/logs/goravel-%s.log", time.Now().Format("2006-01-02"))
-	assert.True(t, file.Exist(log))
+	assert.True(t, file.Exists(log))
 	data, err := ioutil.ReadFile(log)
 	assert.Nil(t, err)
 	assert.False(t, strings.Contains(string(data), "test_async_job: TestErrorAsyncQueue, 1"))
@@ -187,7 +187,7 @@ func (s *QueueTestSuite) TestChainAsyncQueue() {
 
 	time.Sleep(3 * time.Second)
 	log := fmt.Sprintf("storage/logs/goravel-%s.log", time.Now().Format("2006-01-02"))
-	assert.True(t, file.Exist(log))
+	assert.True(t, file.Exists(log))
 	data, err := ioutil.ReadFile(log)
 	assert.Nil(t, err)
 	assert.True(t, strings.Contains(string(data), "test_sync_job: TestChainSyncQueue, 1"))

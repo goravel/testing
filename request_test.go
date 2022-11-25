@@ -13,8 +13,8 @@ import (
 
 	"goravel/bootstrap"
 
-	"github.com/goravel/framework/facades"
 	"github.com/goravel/framework/support/file"
+	"github.com/goravel/framework/facades"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -130,7 +130,7 @@ func TestRequest(t *testing.T) {
 				return nil
 			},
 			expectCode: http.StatusOK,
-			expectBody: "{\"exist\":true}",
+			expectBody: "{\"exist\":true,\"extension\":\"png\",\"file_path_length\":49,\"hash_name_length\":44,\"hash_name_length1\":49,\"original_extension\":\"png\",\"original_name\":\"logo.png\"}",
 		},
 	}
 
@@ -146,6 +146,6 @@ func TestRequest(t *testing.T) {
 		}
 		assert.Equal(t, test.expectCode, w.Code, test.name)
 
-		file.Remove("./resources/test.png")
+		file.Remove("./storage")
 	}
 }

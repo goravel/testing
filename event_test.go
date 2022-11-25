@@ -38,13 +38,13 @@ func (s *EventTestSuite) SetupTest() {
 func (s *EventTestSuite) TestMakeEvent() {
 	t := s.T()
 	Equal(t, "make:event OrderShipped", "Event created successfully")
-	assert.True(t, file.Exist("./app/events/order_shipped.go"))
+	assert.True(t, file.Exists("./app/events/order_shipped.go"))
 }
 
 func (s *EventTestSuite) TestMakeListener() {
 	t := s.T()
 	Equal(t, "make:listener SendShipmentNotification", "Listener created successfully")
-	assert.True(t, file.Exist("./app/listeners/send_shipment_notification.go"))
+	assert.True(t, file.Exists("./app/listeners/send_shipment_notification.go"))
 }
 
 func (s *EventTestSuite) TestEvent() {
@@ -70,7 +70,7 @@ func (s *EventTestSuite) TestEvent() {
 	}).Dispatch())
 
 	log := fmt.Sprintf("storage/logs/goravel-%s.log", time.Now().Format("2006-01-02"))
-	assert.True(t, file.Exist(log))
+	assert.True(t, file.Exists(log))
 	time.Sleep(3 * time.Second)
 	data, err := ioutil.ReadFile(log)
 	assert.Nil(t, err)
@@ -86,7 +86,7 @@ func (s *EventTestSuite) TestCancelEvent() {
 	}).Dispatch(), "cancel")
 
 	log := fmt.Sprintf("storage/logs/goravel-%s.log", time.Now().Format("2006-01-02"))
-	assert.True(t, file.Exist(log))
+	assert.True(t, file.Exists(log))
 	data, err := ioutil.ReadFile(log)
 	assert.Nil(t, err)
 	assert.True(t, strings.Contains(string(data), "test_cancel_listener: Goravel, 1"))

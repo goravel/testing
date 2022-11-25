@@ -7,7 +7,6 @@ import (
 	"github.com/goravel/framework/contracts/http"
 	"github.com/goravel/framework/contracts/route"
 	"github.com/goravel/framework/facades"
-	supportfile "github.com/goravel/framework/support/file"
 )
 
 func Web() {
@@ -146,14 +145,26 @@ func Web() {
 				ctx.Response().Success().String("get file error")
 				return
 			}
-			path := "./resources/test.png"
-			if err := file.Store(path); err != nil {
+			filePath, err := file.Store("test")
+			if err != nil {
 				ctx.Response().Success().String("store file error: " + err.Error())
 				return
 			}
 
+			extension, err := file.Extension()
+			if err != nil {
+				ctx.Response().Success().String("get file extension error: " + err.Error())
+				return
+			}
+
 			ctx.Response().Success().Json(http.Json{
-				"exist": supportfile.Exist(path),
+				"exist":              facades.Storage.Exists(filePath),
+				"hash_name_length":   len(file.HashName()),
+				"hash_name_length1":  len(file.HashName("test")),
+				"file_path_length":   len(filePath),
+				"extension":          extension,
+				"original_name":      file.GetClientOriginalName(),
+				"original_extension": file.GetClientOriginalExtension(),
 			})
 		})
 	})

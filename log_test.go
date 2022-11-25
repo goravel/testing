@@ -41,18 +41,18 @@ func (s *LogTestSuite) TestLog() {
 	facades.Log.Errorf("%s Goravel", "Hello")
 
 	file1 := fmt.Sprintf("storage/logs/goravel-%s.log", time.Now().Format("2006-01-02"))
-	assert.True(t, supportfile.Exist(file1))
-	if supportfile.Exist(file1) {
+	assert.True(t, supportfile.Exists(file1))
+	if supportfile.Exists(file1) {
 		assert.Equal(t, 9, file.GetLineNum(file1))
 	}
 	file2 := "storage/logs/goravel.log"
-	assert.True(t, supportfile.Exist(file2))
-	if supportfile.Exist(file2) {
+	assert.True(t, supportfile.Exists(file2))
+	if supportfile.Exists(file2) {
 		assert.Equal(t, 9, file.GetLineNum(file2))
 	}
 	file3 := "storage/logs/test.log"
-	assert.True(t, supportfile.Exist(file3))
-	if supportfile.Exist(file3) {
+	assert.True(t, supportfile.Exists(file3))
+	if supportfile.Exists(file3) {
 		assert.Equal(t, 9, file.GetLineNum("storage/logs/test.log"))
 	}
 }

@@ -50,7 +50,7 @@ func (s *ArtisanTestSuite) TestHelp() {
 func (s *ArtisanTestSuite) TestMakeCommand() {
 	t := s.T()
 	Equal(t, "make:command SendEmails", "Console command created successfully")
-	assert.True(t, file.Exist("./app/console/commands/send_emails.go"))
+	assert.True(t, file.Exists("./app/console/commands/send_emails.go"))
 	assert.True(t, file.Remove("./app"))
 }
 
@@ -60,7 +60,7 @@ func (s *ArtisanTestSuite) TestCommand() {
 	facades.Artisan.Call("test -n Goravel1 --age 20 argument2 argument3")
 
 	log := fmt.Sprintf("storage/logs/goravel-%s.log", time.Now().Format("2006-01-02"))
-	assert.True(t, file.Exist(log))
+	assert.True(t, file.Exists(log))
 	data, err := ioutil.ReadFile(log)
 	assert.Nil(t, err)
 	assert.True(t, strings.Contains(string(data), "Run test command success, argument_0: argument0, argument_1: argument1, option_name: Goravel, option_age: 18, arguments: argument0,argument1"))

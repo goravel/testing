@@ -36,7 +36,7 @@ func (s *OrmTestSuite) SetupTest() {
 func (s *OrmTestSuite) TestMakeMigration() {
 	t := s.T()
 	Equal(t, "make:migration create_users_table", "Created Migration: create_users_table")
-	assert.True(t, file.Exist("./database/migrations"))
+	assert.True(t, file.Exists("./database/migrations"))
 	assert.True(t, file.Remove("./database"))
 }
 
