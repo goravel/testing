@@ -1,6 +1,6 @@
 # Description
 
-Test the coverage of Goravel.
+The integration testing for goravel/goravel.
 
 ## Runbook
 
