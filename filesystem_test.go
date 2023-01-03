@@ -8,9 +8,9 @@ import (
 
 	"goravel/bootstrap"
 
-	"github.com/goravel/framework/support/file"
 	"github.com/goravel/framework/facades"
 	"github.com/goravel/framework/filesystem"
+	"github.com/goravel/framework/support/file"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -210,6 +210,110 @@ func TestFilesystem(t *testing.T) {
 				assert.True(t, facades.Storage.Disk(disk.disk).Missing("DeleteDirectory/1.txt"), name)
 			},
 		},
+		{
+			name: "Files",
+			setup: func(name string, disk Disk) {
+				assert.Nil(t, facades.Storage.Disk(disk.disk).Put("Files/1.txt", "Goravel"), name)
+				assert.Nil(t, facades.Storage.Disk(disk.disk).Put("Files/2.txt", "Goravel"), name)
+				assert.Nil(t, facades.Storage.Disk(disk.disk).Put("Files/3/3.txt", "Goravel"), name)
+				assert.Nil(t, facades.Storage.Disk(disk.disk).Put("Files/3/4/4.txt", "Goravel"), name)
+				assert.True(t, facades.Storage.Disk(disk.disk).Exists("Files/1.txt"), name)
+				assert.True(t, facades.Storage.Disk(disk.disk).Exists("Files/2.txt"), name)
+				assert.True(t, facades.Storage.Disk(disk.disk).Exists("Files/3/3.txt"), name)
+				assert.True(t, facades.Storage.Disk(disk.disk).Exists("Files/3/4/4.txt"), name)
+				files, err := facades.Storage.Disk(disk.disk).Files("Files")
+				assert.Nil(t, err, name)
+				assert.Equal(t, []string{"1.txt", "2.txt"}, files, name)
+				files, err = facades.Storage.Disk(disk.disk).Files("./Files")
+				assert.Nil(t, err, name)
+				assert.Equal(t, []string{"1.txt", "2.txt"}, files, name)
+				files, err = facades.Storage.Disk(disk.disk).Files("/Files")
+				assert.Nil(t, err, name)
+				assert.Equal(t, []string{"1.txt", "2.txt"}, files, name)
+				files, err = facades.Storage.Disk(disk.disk).Files("./Files/")
+				assert.Nil(t, err, name)
+				assert.Equal(t, []string{"1.txt", "2.txt"}, files, name)
+			},
+		},
+		{
+			name: "AllFiles",
+			setup: func(name string, disk Disk) {
+				assert.Nil(t, facades.Storage.Disk(disk.disk).Put("AllFiles/1.txt", "Goravel"), name)
+				assert.Nil(t, facades.Storage.Disk(disk.disk).Put("AllFiles/2.txt", "Goravel"), name)
+				assert.Nil(t, facades.Storage.Disk(disk.disk).Put("AllFiles/3/3.txt", "Goravel"), name)
+				assert.Nil(t, facades.Storage.Disk(disk.disk).Put("AllFiles/3/4/4.txt", "Goravel"), name)
+				assert.True(t, facades.Storage.Disk(disk.disk).Exists("AllFiles/1.txt"), name)
+				assert.True(t, facades.Storage.Disk(disk.disk).Exists("AllFiles/2.txt"), name)
+				assert.True(t, facades.Storage.Disk(disk.disk).Exists("AllFiles/3/3.txt"), name)
+				assert.True(t, facades.Storage.Disk(disk.disk).Exists("AllFiles/3/4/4.txt"), name)
+				files, err := facades.Storage.Disk(disk.disk).AllFiles("AllFiles")
+				assert.Nil(t, err, name)
+				assert.Equal(t, []string{"1.txt", "2.txt", "3/3.txt", "3/4/4.txt"}, files, name)
+				files, err = facades.Storage.Disk(disk.disk).AllFiles("./AllFiles")
+				assert.Nil(t, err, name)
+				assert.Equal(t, []string{"1.txt", "2.txt", "3/3.txt", "3/4/4.txt"}, files, name)
+				files, err = facades.Storage.Disk(disk.disk).AllFiles("/AllFiles")
+				assert.Nil(t, err, name)
+				assert.Equal(t, []string{"1.txt", "2.txt", "3/3.txt", "3/4/4.txt"}, files, name)
+				files, err = facades.Storage.Disk(disk.disk).AllFiles("./AllFiles/")
+				assert.Nil(t, err, name)
+				assert.Equal(t, []string{"1.txt", "2.txt", "3/3.txt", "3/4/4.txt"}, files, name)
+			},
+		},
+		{
+			name: "Directories",
+			setup: func(name string, disk Disk) {
+				assert.Nil(t, facades.Storage.Disk(disk.disk).Put("Directories/1.txt", "Goravel"), name)
+				assert.Nil(t, facades.Storage.Disk(disk.disk).Put("Directories/2.txt", "Goravel"), name)
+				assert.Nil(t, facades.Storage.Disk(disk.disk).Put("Directories/3/3.txt", "Goravel"), name)
+				assert.Nil(t, facades.Storage.Disk(disk.disk).Put("Directories/3/5/5.txt", "Goravel"), name)
+				assert.Nil(t, facades.Storage.Disk(disk.disk).MakeDirectory("Directories/3/4"), name)
+				assert.True(t, facades.Storage.Disk(disk.disk).Exists("Directories/1.txt"), name)
+				assert.True(t, facades.Storage.Disk(disk.disk).Exists("Directories/2.txt"), name)
+				assert.True(t, facades.Storage.Disk(disk.disk).Exists("Directories/3/3.txt"), name)
+				assert.True(t, facades.Storage.Disk(disk.disk).Exists("Directories/3/4/"), name)
+				assert.True(t, facades.Storage.Disk(disk.disk).Exists("Directories/3/5/5.txt"), name)
+				files, err := facades.Storage.Disk(disk.disk).Directories("Directories")
+				assert.Nil(t, err, name)
+				assert.Equal(t, []string{"3/"}, files, name)
+				files, err = facades.Storage.Disk(disk.disk).Directories("./Directories")
+				assert.Nil(t, err, name)
+				assert.Equal(t, []string{"3/"}, files, name)
+				files, err = facades.Storage.Disk(disk.disk).Directories("/Directories")
+				assert.Nil(t, err, name)
+				assert.Equal(t, []string{"3/"}, files, name)
+				files, err = facades.Storage.Disk(disk.disk).Directories("./Directories/")
+				assert.Nil(t, err, name)
+				assert.Equal(t, []string{"3/"}, files, name)
+			},
+		},
+		{
+			name: "AllDirectories",
+			setup: func(name string, disk Disk) {
+				assert.Nil(t, facades.Storage.Disk(disk.disk).Put("AllDirectories/1.txt", "Goravel"), name)
+				assert.Nil(t, facades.Storage.Disk(disk.disk).Put("AllDirectories/2.txt", "Goravel"), name)
+				assert.Nil(t, facades.Storage.Disk(disk.disk).Put("AllDirectories/3/3.txt", "Goravel"), name)
+				assert.Nil(t, facades.Storage.Disk(disk.disk).Put("AllDirectories/3/5/6/6.txt", "Goravel"), name)
+				assert.Nil(t, facades.Storage.Disk(disk.disk).MakeDirectory("AllDirectories/3/4"), name)
+				assert.True(t, facades.Storage.Disk(disk.disk).Exists("AllDirectories/1.txt"), name)
+				assert.True(t, facades.Storage.Disk(disk.disk).Exists("AllDirectories/2.txt"), name)
+				assert.True(t, facades.Storage.Disk(disk.disk).Exists("AllDirectories/3/3.txt"), name)
+				assert.True(t, facades.Storage.Disk(disk.disk).Exists("AllDirectories/3/4/"), name)
+				assert.True(t, facades.Storage.Disk(disk.disk).Exists("AllDirectories/3/5/6/6.txt"), name)
+				files, err := facades.Storage.Disk(disk.disk).AllDirectories("AllDirectories")
+				assert.Nil(t, err, name)
+				assert.Equal(t, []string{"3/", "3/4/", "3/5/", "3/5/6/"}, files, name)
+				files, err = facades.Storage.Disk(disk.disk).AllDirectories("./AllDirectories")
+				assert.Nil(t, err, name)
+				assert.Equal(t, []string{"3/", "3/4/", "3/5/", "3/5/6/"}, files, name)
+				files, err = facades.Storage.Disk(disk.disk).AllDirectories("/AllDirectories")
+				assert.Nil(t, err, name)
+				assert.Equal(t, []string{"3/", "3/4/", "3/5/", "3/5/6/"}, files, name)
+				files, err = facades.Storage.Disk(disk.disk).AllDirectories("./AllDirectories/")
+				assert.Nil(t, err, name)
+				assert.Equal(t, []string{"3/", "3/4/", "3/5/", "3/5/6/"}, files, name)
+			},
+		},
 	}
 
 	for _, disk := range disks {
@@ -233,6 +337,10 @@ func TestFilesystem(t *testing.T) {
 		assert.Nil(t, facades.Storage.Disk(disk.disk).DeleteDirectory("MakeDirectory3"), disk.disk)
 		assert.Nil(t, facades.Storage.Disk(disk.disk).DeleteDirectory("MakeDirectory4"), disk.disk)
 		assert.Nil(t, facades.Storage.Disk(disk.disk).DeleteDirectory("DeleteDirectory"), disk.disk)
+		assert.Nil(t, facades.Storage.Disk(disk.disk).DeleteDirectory("Files"), disk.disk)
+		assert.Nil(t, facades.Storage.Disk(disk.disk).DeleteDirectory("AllFiles"), disk.disk)
+		assert.Nil(t, facades.Storage.Disk(disk.disk).DeleteDirectory("Directories"), disk.disk)
+		assert.Nil(t, facades.Storage.Disk(disk.disk).DeleteDirectory("AllDirectories"), disk.disk)
 
 		if disk.disk == "local" || disk.disk == "custom" {
 			assert.True(t, file.Remove("./storage"))

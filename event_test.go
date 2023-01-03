@@ -49,7 +49,8 @@ func (s *EventTestSuite) TestMakeListener() {
 
 func (s *EventTestSuite) TestEvent() {
 	t := s.T()
-	ctx, _ := context.WithTimeout(context.Background(), 3*time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	defer cancel()
 
 	go func(ctx context.Context) {
 		if err := facades.Queue.Worker(nil).Run(); err != nil {

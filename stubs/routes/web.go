@@ -2,6 +2,8 @@ package routes
 
 import (
 	"encoding/json"
+	"fmt"
+	"goravel/testing/resources/requests"
 	nethttp "net/http"
 
 	"github.com/goravel/framework/contracts/http"
@@ -165,6 +167,172 @@ func Web() {
 				"extension":          extension,
 				"original_name":      file.GetClientOriginalName(),
 				"original_extension": file.GetClientOriginalExtension(),
+			})
+		})
+		route.Get("/validator/validate/success", func(ctx http.Context) {
+			validator, err := ctx.Request().Validate(map[string]string{
+				"name": "required",
+			})
+			if err != nil {
+				ctx.Response().String(400, "Validate error: "+err.Error())
+				return
+			}
+			if validator.Fails() {
+				ctx.Response().String(400, fmt.Sprintf("Validate fail: %+v", validator.Errors().All()))
+				return
+			}
+
+			type Test struct {
+				Name string `form:"name" json:"name"`
+			}
+			var test Test
+			if err := validator.Bind(&test); err != nil {
+				ctx.Response().String(400, "Validate bind error: "+err.Error())
+				return
+			}
+
+			ctx.Response().Success().Json(http.Json{
+				"name": test.Name,
+			})
+		})
+		route.Get("/validator/validate/fail", func(ctx http.Context) {
+			validator, err := ctx.Request().Validate(map[string]string{
+				"name1": "required",
+			})
+			if err != nil {
+				ctx.Response().String(nethttp.StatusBadRequest, "Validate error: "+err.Error())
+				return
+			}
+			if validator.Fails() {
+				ctx.Response().String(nethttp.StatusBadRequest, fmt.Sprintf("Validate fail: %+v", validator.Errors().All()))
+				return
+			}
+
+			ctx.Response().Success().Json(http.Json{
+				"name": "",
+			})
+		})
+		route.Get("/validator/validate-request/success", func(ctx http.Context) {
+			var createUser requests.CreateUser
+			errors, err := ctx.Request().ValidateRequest(&createUser)
+			if err != nil {
+				ctx.Response().String(nethttp.StatusBadRequest, "Validate error: "+err.Error())
+				return
+			}
+			if errors != nil {
+				ctx.Response().String(nethttp.StatusBadRequest, fmt.Sprintf("Validate fail: %+v", errors.All()))
+				return
+			}
+
+			ctx.Response().Success().Json(http.Json{
+				"name": createUser.Name,
+			})
+		})
+		route.Get("/validator/validate-request/fail", func(ctx http.Context) {
+			var createUser requests.CreateUser
+			errors, err := ctx.Request().ValidateRequest(&createUser)
+			if err != nil {
+				ctx.Response().String(nethttp.StatusBadRequest, "Validate error: "+err.Error())
+				return
+			}
+			if errors != nil {
+				ctx.Response().String(nethttp.StatusBadRequest, fmt.Sprintf("Validate fail: %+v", errors.All()))
+				return
+			}
+
+			ctx.Response().Success().Json(http.Json{
+				"name": createUser.Name,
+			})
+		})
+		route.Post("/validator/validate/success", func(ctx http.Context) {
+			validator, err := ctx.Request().Validate(map[string]string{
+				"name": "required",
+			})
+			if err != nil {
+				ctx.Response().String(400, "Validate error: "+err.Error())
+				return
+			}
+			if validator.Fails() {
+				ctx.Response().String(400, fmt.Sprintf("Validate fail: %+v", validator.Errors().All()))
+				return
+			}
+
+			type Test struct {
+				Name string `form:"name" json:"name"`
+			}
+			var test Test
+			if err := validator.Bind(&test); err != nil {
+				ctx.Response().String(400, "Validate bind error: "+err.Error())
+				return
+			}
+
+			ctx.Response().Success().Json(http.Json{
+				"name": test.Name,
+			})
+		})
+		route.Post("/validator/validate/fail", func(ctx http.Context) {
+			validator, err := ctx.Request().Validate(map[string]string{
+				"name1": "required",
+			})
+			if err != nil {
+				ctx.Response().String(400, "Validate error: "+err.Error())
+				return
+			}
+			if validator.Fails() {
+				ctx.Response().String(400, fmt.Sprintf("Validate fail: %+v", validator.Errors().All()))
+				return
+			}
+
+			ctx.Response().Success().Json(http.Json{
+				"name": "",
+			})
+		})
+		route.Post("/validator/validate-request/success", func(ctx http.Context) {
+			var createUser requests.CreateUser
+			errors, err := ctx.Request().ValidateRequest(&createUser)
+			if err != nil {
+				ctx.Response().String(nethttp.StatusBadRequest, "Validate error: "+err.Error())
+				return
+			}
+			if errors != nil {
+				ctx.Response().String(nethttp.StatusBadRequest, fmt.Sprintf("Validate fail: %+v", errors.All()))
+				return
+			}
+
+			ctx.Response().Success().Json(http.Json{
+				"name": createUser.Name,
+			})
+		})
+		route.Post("/validator/validate-request/fail", func(ctx http.Context) {
+			var createUser requests.CreateUser
+			errors, err := ctx.Request().ValidateRequest(&createUser)
+			if err != nil {
+				ctx.Response().String(nethttp.StatusBadRequest, "Validate error: "+err.Error())
+				return
+			}
+			if errors != nil {
+				ctx.Response().String(nethttp.StatusBadRequest, fmt.Sprintf("Validate fail: %+v", errors.All()))
+				return
+			}
+
+			ctx.Response().Success().Json(http.Json{
+				"name": createUser.Name,
+			})
+		})
+		route.Post("/validator/validate-request/unauthorize", func(ctx http.Context) {
+			var unauthorize requests.Unauthorize
+			errors, err := ctx.Request().ValidateRequest(&unauthorize)
+			if err != nil {
+				ctx.Response().String(nethttp.StatusBadRequest, "Validate error: "+err.Error())
+				return
+			}
+			if errors != nil {
+				ctx.Response().String(nethttp.StatusBadRequest, fmt.Sprintf("Validate fail: %+v", errors.All()))
+				return
+			}
+
+			ctx.Response().Success().Json(http.Json{
+				"name": unauthorize.Name,
 			})
 		})
 	})

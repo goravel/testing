@@ -13,8 +13,8 @@ import (
 
 	"goravel/bootstrap"
 
-	"github.com/goravel/framework/support/file"
 	"github.com/goravel/framework/facades"
+	"github.com/goravel/framework/support/file"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -131,6 +131,150 @@ func TestRequest(t *testing.T) {
 			},
 			expectCode: http.StatusOK,
 			expectBody: "{\"exist\":true,\"extension\":\"png\",\"file_path_length\":49,\"hash_name_length\":44,\"hash_name_length1\":49,\"original_extension\":\"png\",\"original_name\":\"logo.png\"}",
+		},
+		{
+			name:   "GET with validator and validate pass",
+			method: "GET",
+			url:    "/request/validator/validate/success?name=Goravel",
+			setup: func(method, url string) error {
+				var err error
+				req, err = http.NewRequest(method, url, nil)
+				if err != nil {
+					return err
+				}
+
+				return nil
+			},
+			expectCode: http.StatusOK,
+			expectBody: "{\"name\":\"Goravel\"}",
+		},
+		{
+			name:   "GET with validator but validate fail",
+			method: "GET",
+			url:    "/request/validator/validate/fail?name=Goravel",
+			setup: func(method, url string) error {
+				var err error
+				req, err = http.NewRequest(method, url, nil)
+				if err != nil {
+					return err
+				}
+
+				return nil
+			},
+			expectCode: http.StatusBadRequest,
+			expectBody: "Validate fail: map[name1:map[required:name1 is required to not be empty]]",
+		},
+		{
+			name:   "GET with validator and validate request pass",
+			method: "GET",
+			url:    "/request/validator/validate-request/success?name=Goravel",
+			setup: func(method, url string) error {
+				var err error
+				req, err = http.NewRequest(method, url, nil)
+				if err != nil {
+					return err
+				}
+
+				return nil
+			},
+			expectCode: http.StatusOK,
+			expectBody: "{\"name\":\"Goravel1\"}",
+		},
+		{
+			name:   "GET with validator but validate request fail",
+			method: "GET",
+			url:    "/request/validator/validate-request/fail?name1=Goravel",
+			setup: func(method, url string) error {
+				var err error
+				req, err = http.NewRequest(method, url, nil)
+				if err != nil {
+					return err
+				}
+
+				return nil
+			},
+			expectCode: http.StatusBadRequest,
+			expectBody: "Validate fail: map[name:map[required:name is required to not be empty]]",
+		},
+		{
+			name:   "POST with validator and validate pass",
+			method: "POST",
+			url:    "/request/validator/validate/success",
+			setup: func(method, url string) error {
+				payload := strings.NewReader(`{
+					"name": "Goravel"
+				}`)
+				req, _ = http.NewRequest(method, url, payload)
+				req.Header.Set("Content-Type", "application/json")
+
+				return nil
+			},
+			expectCode: http.StatusOK,
+			expectBody: "{\"name\":\"Goravel\"}",
+		},
+		{
+			name:   "POST with validator and validate fail",
+			method: "POST",
+			url:    "/request/validator/validate/fail",
+			setup: func(method, url string) error {
+				payload := strings.NewReader(`{
+					"name": "Goravel"
+				}`)
+				req, _ = http.NewRequest(method, url, payload)
+				req.Header.Set("Content-Type", "application/json")
+
+				return nil
+			},
+			expectCode: http.StatusBadRequest,
+			expectBody: "Validate fail: map[name1:map[required:name1 is required to not be empty]]",
+		},
+		{
+			name:   "POST with validator and validate request pass",
+			method: "POST",
+			url:    "/request/validator/validate-request/success",
+			setup: func(method, url string) error {
+				payload := strings.NewReader(`{
+					"name": "Goravel"
+				}`)
+				req, _ = http.NewRequest(method, url, payload)
+				req.Header.Set("Content-Type", "application/json")
+
+				return nil
+			},
+			expectCode: http.StatusOK,
+			expectBody: "{\"name\":\"Goravel1\"}",
+		},
+		{
+			name:   "POST with validator and validate request fail",
+			method: "POST",
+			url:    "/request/validator/validate-request/fail",
+			setup: func(method, url string) error {
+				payload := strings.NewReader(`{
+					"name1": "Goravel"
+				}`)
+				req, _ = http.NewRequest(method, url, payload)
+				req.Header.Set("Content-Type", "application/json")
+
+				return nil
+			},
+			expectCode: http.StatusBadRequest,
+			expectBody: "Validate fail: map[name:map[required:name is required to not be empty]]",
+		},
+		{
+			name:   "POST with validator and validate request unauthorize",
+			method: "POST",
+			url:    "/request/validator/validate-request/unauthorize",
+			setup: func(method, url string) error {
+				payload := strings.NewReader(`{
+					"name": "Goravel"
+				}`)
+				req, _ = http.NewRequest(method, url, payload)
+				req.Header.Set("Content-Type", "application/json")
+
+				return nil
+			},
+			expectCode: http.StatusBadRequest,
+			expectBody: "Validate error: error",
 		},
 	}
 

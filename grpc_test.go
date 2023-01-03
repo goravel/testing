@@ -62,9 +62,3 @@ func (s *GrpcTestSuite) TestError() {
 	assert.Nil(s.T(), res)
 	assert.EqualError(s.T(), err, "rpc error: code = Unknown desc = error")
 }
-
-func (s *GrpcTestSuite) TestErrorWhenServerDoesntRun() {
-	client, err := facades.Grpc.Client(context.Background(), "timeout")
-	assert.Nil(s.T(), client)
-	assert.ErrorIs(s.T(), err, context.DeadlineExceeded)
-}

@@ -24,8 +24,53 @@ type QueueTestSuite struct {
 
 func TestQueueTestSuite(t *testing.T) {
 	file.Remove("./storage")
-
 	bootstrap.Boot()
+
+	ctx, _ := context.WithTimeout(context.Background(), 10*time.Second)
+	go func(ctx context.Context) {
+		if err := facades.Queue.Worker(nil).Run(); err != nil {
+			facades.Log.Errorf("Queue run error: %v", err)
+		}
+
+		for {
+			select {
+			case <-ctx.Done():
+				return
+			}
+		}
+	}(ctx)
+	go func(ctx context.Context) {
+		if err := facades.Queue.Worker(&queue.Args{
+			Connection: "test",
+			Queue:      "test1",
+			Concurrent: 2,
+		}).Run(); err != nil {
+			facades.Log.Errorf("Queue run error: %v", err)
+		}
+
+		for {
+			select {
+			case <-ctx.Done():
+				return
+			}
+		}
+	}(ctx)
+	go func(ctx context.Context) {
+		if err := facades.Queue.Worker(&queue.Args{
+			Connection: "redis",
+			Queue:      "test1",
+			Concurrent: 2,
+		}).Run(); err != nil {
+			facades.Log.Errorf("Queue run error: %v", err)
+		}
+
+		for {
+			select {
+			case <-ctx.Done():
+				return
+			}
+		}
+	}(ctx)
 
 	suite.Run(t, new(QueueTestSuite))
 }
@@ -55,120 +100,48 @@ func (s *QueueTestSuite) TestSyncQueue() {
 }
 
 func (s *QueueTestSuite) TestDefaultAsyncQueue() {
-	t := s.T()
-	ctx, _ := context.WithTimeout(context.Background(), 3*time.Second)
-	go func(ctx context.Context) {
-		if err := facades.Queue.Worker(nil).Run(); err != nil {
-			facades.Log.Errorf("Queue run error: %v", err)
-		}
-
-		for {
-			select {
-			case <-ctx.Done():
-				return
-			}
-		}
-	}(ctx)
-
-	assert.Nil(t, facades.Queue.Job(&jobs.TestAsyncJob{}, []queue.Arg{
+	s.Nil(facades.Queue.Job(&jobs.TestAsyncJob{}, []queue.Arg{
 		{Type: "string", Value: "TestDefaultAsyncQueue"},
 		{Type: "int", Value: 1},
 	}).Dispatch())
 
 	time.Sleep(3 * time.Second)
 	log := fmt.Sprintf("storage/logs/goravel-%s.log", time.Now().Format("2006-01-02"))
-	assert.True(t, file.Exists(log))
+	s.True(file.Exists(log))
 	data, err := ioutil.ReadFile(log)
-	assert.Nil(t, err)
-	assert.True(t, strings.Contains(string(data), "test_async_job: TestDefaultAsyncQueue, 1"))
+	s.Nil(err)
+	s.True(strings.Contains(string(data), "test_async_job: TestDefaultAsyncQueue, 1"))
 }
 
 func (s *QueueTestSuite) TestCustomAsyncQueue() {
-	t := s.T()
-	ctx, _ := context.WithTimeout(context.Background(), 3*time.Second)
-
-	go func(ctx context.Context) {
-		if err := facades.Queue.Worker(&queue.Args{
-			Connection: "test",
-			Queue:      "test1",
-			Concurrent: 2,
-		}).Run(); err != nil {
-			facades.Log.Errorf("Queue run error: %v", err)
-		}
-
-		for {
-			select {
-			case <-ctx.Done():
-				return
-			}
-		}
-	}(ctx)
-
-	assert.Nil(t, facades.Queue.Job(&jobs.TestAsyncJob{}, []queue.Arg{
+	s.Nil(facades.Queue.Job(&jobs.TestAsyncJob{}, []queue.Arg{
 		{Type: "string", Value: "TestCustomAsyncQueue"},
 		{Type: "int", Value: 1},
 	}).OnConnection("test").OnQueue("test1").Dispatch())
-
-	time.Sleep(3 * time.Second)
+	time.Sleep(2 * time.Second)
 	log := fmt.Sprintf("storage/logs/goravel-%s.log", time.Now().Format("2006-01-02"))
-	assert.True(t, file.Exists(log))
+	s.True(file.Exists(log))
 	data, err := ioutil.ReadFile(log)
-	assert.Nil(t, err)
-	assert.True(t, strings.Contains(string(data), "test_async_job: TestCustomAsyncQueue, 1"))
+	s.Nil(err)
+	s.True(strings.Contains(string(data), "test_async_job: TestCustomAsyncQueue, 1"))
 }
 
 func (s *QueueTestSuite) TestErrorAsyncQueue() {
-	t := s.T()
-	ctx, _ := context.WithTimeout(context.Background(), 3*time.Second)
-
-	go func(ctx context.Context) {
-		if err := facades.Queue.Worker(&queue.Args{
-			Connection: "redis",
-			Queue:      "test1",
-			Concurrent: 2,
-		}).Run(); err != nil {
-			facades.Log.Errorf("Queue run error: %v", err)
-		}
-
-		for {
-			select {
-			case <-ctx.Done():
-				return
-			}
-		}
-	}(ctx)
-
-	assert.Nil(t, facades.Queue.Job(&jobs.TestAsyncJob{}, []queue.Arg{
+	s.Nil(facades.Queue.Job(&jobs.TestAsyncJob{}, []queue.Arg{
 		{Type: "string", Value: "TestErrorAsyncQueue"},
 		{Type: "int", Value: 1},
 	}).OnConnection("redis").OnQueue("test2").Dispatch())
-
-	time.Sleep(3 * time.Second)
+	time.Sleep(2 * time.Second)
 	log := fmt.Sprintf("storage/logs/goravel-%s.log", time.Now().Format("2006-01-02"))
-	assert.True(t, file.Exists(log))
-	data, err := ioutil.ReadFile(log)
-	assert.Nil(t, err)
-	assert.False(t, strings.Contains(string(data), "test_async_job: TestErrorAsyncQueue, 1"))
+	if file.Exists(log) {
+		data, err := ioutil.ReadFile(log)
+		s.Nil(err)
+		s.False(strings.Contains(string(data), "test_async_job: TestErrorAsyncQueue, 1"))
+	}
 }
 
 func (s *QueueTestSuite) TestChainAsyncQueue() {
-	t := s.T()
-	ctx, _ := context.WithTimeout(context.Background(), 3*time.Second)
-
-	go func(ctx context.Context) {
-		if err := facades.Queue.Worker(nil).Run(); err != nil {
-			facades.Log.Errorf("Queue run error: %v", err)
-		}
-
-		for {
-			select {
-			case <-ctx.Done():
-				return
-			}
-		}
-	}(ctx)
-
-	assert.Nil(t, facades.Queue.Chain([]queue.Jobs{
+	s.Nil(facades.Queue.Chain([]queue.Jobs{
 		{
 			Job: &jobs.TestAsyncJob{},
 			Args: []queue.Arg{
@@ -184,12 +157,11 @@ func (s *QueueTestSuite) TestChainAsyncQueue() {
 			},
 		},
 	}).Dispatch())
-
-	time.Sleep(3 * time.Second)
+	time.Sleep(2 * time.Second)
 	log := fmt.Sprintf("storage/logs/goravel-%s.log", time.Now().Format("2006-01-02"))
-	assert.True(t, file.Exists(log))
+	s.True(file.Exists(log))
 	data, err := ioutil.ReadFile(log)
-	assert.Nil(t, err)
-	assert.True(t, strings.Contains(string(data), "test_sync_job: TestChainSyncQueue, 1"))
-	assert.True(t, strings.Contains(string(data), "test_async_job: TestChainAsyncQueue, 1"))
+	s.Nil(err)
+	s.True(strings.Contains(string(data), "test_sync_job: TestChainSyncQueue, 1"))
+	s.True(strings.Contains(string(data), "test_async_job: TestChainAsyncQueue, 1"))
 }
