@@ -12,6 +12,7 @@ import (
 	"github.com/goravel/framework/testing/mock"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/suite"
+	"gorm.io/gorm/clause"
 )
 
 type AuthTestSuite struct {
@@ -105,7 +106,7 @@ func (s *AuthTestSuite) TestUser() {
 	var user models.User
 	mockOrm, mockDB, _ := mock.Orm()
 	mockOrm.On("Query").Return(mockDB).Once()
-	mockDB.On("Find", &user, "1").Return(nil).Once()
+	mockDB.On("Find", &user, clause.Eq{Column: clause.PrimaryColumn, Value: "1"}).Return(nil).Once()
 
 	err = facades.Auth.User(ctx, &user)
 	assert.Nil(s.T(), err)
@@ -141,7 +142,7 @@ func (s *AuthTestSuite) TestLogout() {
 	var user models.User
 	mockOrm, mockDB, _ := mock.Orm()
 	mockOrm.On("Query").Return(mockDB).Once()
-	mockDB.On("Find", &user, "1").Return(nil).Once()
+	mockDB.On("Find", &user, clause.Eq{Column: clause.PrimaryColumn, Value: "1"}).Return(nil).Once()
 
 	err = facades.Auth.Guard("admin").User(ctx, &user)
 	assert.Nil(s.T(), err)
