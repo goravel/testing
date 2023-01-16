@@ -20,6 +20,8 @@ type AuthTestSuite struct {
 }
 
 func TestAuthTestSuite(t *testing.T) {
+	bootstrap.Boot()
+
 	facades.Config.Add("jwt", map[string]interface{}{
 		"secret":      "Goravel",
 		"ttl":         60,
@@ -30,7 +32,7 @@ func TestAuthTestSuite(t *testing.T) {
 }
 
 func (s *AuthTestSuite) SetupTest() {
-	bootstrap.Boot()
+
 }
 
 func (s *AuthTestSuite) TestJwtSecret() {
