@@ -1,15 +1,10 @@
 package testing
 
 import (
-	"fmt"
-	"io/ioutil"
-	"strings"
 	"testing"
-	"time"
 
 	"goravel/bootstrap"
 
-	"github.com/goravel/framework/facades"
 	"github.com/goravel/framework/support/file"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/suite"
@@ -20,8 +15,6 @@ type ArtisanTestSuite struct {
 }
 
 func TestArtisanTestSuite(t *testing.T) {
-	file.Remove("./storage")
-
 	bootstrap.Boot()
 
 	suite.Run(t, new(ArtisanTestSuite))
@@ -31,20 +24,28 @@ func (s *ArtisanTestSuite) SetupTest() {
 
 }
 
+func (s *ArtisanTestSuite) TestCacheClear() {
+	Equal(s.T(), "cache:clear", "Application cache cleared")
+}
+
+func (s *ArtisanTestSuite) TestHelp() {
+	NotEmpty(s.T(), "help migrate")
+}
+
+func (s *ArtisanTestSuite) TestList() {
+	NotEmpty(s.T(), "list")
+}
+
+func (s *ArtisanTestSuite) TestJwtSecret() {
+	t := s.T()
+	Equal(t, "jwt:secret", "Jwt Secret set successfully")
+	Equal(t, "jwt:secret", "Exist jwt secret")
+}
+
 func (s *ArtisanTestSuite) TestKeyGenerate() {
 	t := s.T()
 	Equal(t, "key:generate", "Application key set successfully")
 	Equal(t, "key:generate", "Exist application key")
-}
-
-func (s *ArtisanTestSuite) TestList() {
-	t := s.T()
-	NotEmpty(t, "list")
-}
-
-func (s *ArtisanTestSuite) TestHelp() {
-	t := s.T()
-	NotEmpty(t, "help migrate")
 }
 
 func (s *ArtisanTestSuite) TestMakeCommand() {
@@ -54,15 +55,51 @@ func (s *ArtisanTestSuite) TestMakeCommand() {
 	assert.True(t, file.Remove("./app"))
 }
 
-func (s *ArtisanTestSuite) TestCommand() {
+func (s *ArtisanTestSuite) TestMakeEvent() {
 	t := s.T()
-	facades.Artisan.Call("test --name Goravel argument0 argument1")
-	facades.Artisan.Call("test -n Goravel1 --age 20 argument2 argument3")
+	Equal(t, "make:event OrderShipped", "Event created successfully")
+	assert.True(t, file.Exists("./app/events/order_shipped.go"))
+	assert.True(t, file.Remove("./app"))
+}
 
-	log := fmt.Sprintf("storage/logs/goravel-%s.log", time.Now().Format("2006-01-02"))
-	assert.True(t, file.Exists(log))
-	data, err := ioutil.ReadFile(log)
-	assert.Nil(t, err)
-	assert.True(t, strings.Contains(string(data), "Run test command success, argument_0: argument0, argument_1: argument1, option_name: Goravel, option_age: 18, arguments: argument0,argument1"))
-	assert.True(t, strings.Contains(string(data), "Run test command success, argument_0: argument2, argument_1: argument3, option_name: Goravel1, option_age: 20, arguments: argument2,argument3"))
+func (s *ArtisanTestSuite) TestMakeJob() {
+	t := s.T()
+	Equal(t, "make:job TestJob", "Job created successfully")
+	assert.True(t, file.Exists("./app/jobs/test_job.go"))
+	assert.True(t, file.Remove("./app"))
+}
+
+func (s *ArtisanTestSuite) TestMakeListener() {
+	t := s.T()
+	Equal(t, "make:listener SendShipmentNotification", "Listener created successfully")
+	assert.True(t, file.Exists("./app/listeners/send_shipment_notification.go"))
+	assert.True(t, file.Remove("./app"))
+}
+
+func (s *ArtisanTestSuite) TestMakeMigration() {
+	t := s.T()
+	Equal(t, "make:migration create_users_table", "Created Migration: create_users_table")
+	assert.True(t, file.Exists("./database/migrations"))
+	assert.True(t, file.Remove("./database"))
+}
+
+func (s *ArtisanTestSuite) TestMakePolicy() {
+	t := s.T()
+	Equal(t, "make:policy UserPolicy", "Policy created successfully")
+	assert.True(t, file.Exists("./app/policies/user_policy.go"))
+	assert.True(t, file.Remove("./app"))
+}
+
+func (s *ArtisanTestSuite) TestMakeRequest() {
+	t := s.T()
+	Equal(t, "make:request UserRequest", "Request created successfully")
+	assert.True(t, file.Exists("./app/http/requests/user_request.go"))
+	assert.True(t, file.Remove("./app"))
+}
+
+func (s *ArtisanTestSuite) TestMakeRule() {
+	t := s.T()
+	Equal(t, "make:rule UserRule", "Rule created successfully")
+	assert.True(t, file.Exists("./app/rules/user_rule.go"))
+	assert.True(t, file.Remove("./app"))
 }
