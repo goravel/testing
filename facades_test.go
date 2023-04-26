@@ -78,3 +78,11 @@ func (s *FacadesTestSuite) TestSchedule() {
 func (s *FacadesTestSuite) TestValidation() {
 	s.NotNil(facades.Validation)
 }
+
+func (s *FacadesTestSuite) TestCrypt() {
+	s.NotNil(facades.Crypt)
+}
+
+func (s *FacadesTestSuite) TestHash() {
+	s.NotNil(facades.Hash)
+}

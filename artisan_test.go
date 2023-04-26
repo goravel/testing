@@ -3,11 +3,11 @@ package testing
 import (
 	"testing"
 
-	"goravel/bootstrap"
-
 	"github.com/goravel/framework/support/file"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/suite"
+
+	"goravel/bootstrap"
 )
 
 type ArtisanTestSuite struct {
@@ -55,6 +55,13 @@ func (s *ArtisanTestSuite) TestMakeCommand() {
 	assert.True(t, file.Remove("./app"))
 }
 
+func (s *ArtisanTestSuite) TestMakeController() {
+	t := s.T()
+	Equal(t, "make:controller AgentController", "Controller created successfully")
+	assert.True(t, file.Exists("./app/http/controllers/agent_controller.go"))
+	assert.True(t, file.Remove("./app"))
+}
+
 func (s *ArtisanTestSuite) TestMakeEvent() {
 	t := s.T()
 	Equal(t, "make:event OrderShipped", "Event created successfully")
@@ -69,10 +76,24 @@ func (s *ArtisanTestSuite) TestMakeJob() {
 	assert.True(t, file.Remove("./app"))
 }
 
+func (s *ArtisanTestSuite) TestMakeModel() {
+	t := s.T()
+	Equal(t, "make:model Agent", "Model created successfully")
+	assert.True(t, file.Exists("./app/models/agent.go"))
+	assert.True(t, file.Remove("./app"))
+}
+
 func (s *ArtisanTestSuite) TestMakeListener() {
 	t := s.T()
 	Equal(t, "make:listener SendShipmentNotification", "Listener created successfully")
 	assert.True(t, file.Exists("./app/listeners/send_shipment_notification.go"))
+	assert.True(t, file.Remove("./app"))
+}
+
+func (s *ArtisanTestSuite) TestMakeMiddleware() {
+	t := s.T()
+	Equal(t, "make:middleware Cors", "Middleware created successfully")
+	assert.True(t, file.Exists("./app/http/middleware/cors.go"))
 	assert.True(t, file.Remove("./app"))
 }
 
@@ -101,5 +122,12 @@ func (s *ArtisanTestSuite) TestMakeRule() {
 	t := s.T()
 	Equal(t, "make:rule UserRule", "Rule created successfully")
 	assert.True(t, file.Exists("./app/rules/user_rule.go"))
+	assert.True(t, file.Remove("./app"))
+}
+
+func (s *ArtisanTestSuite) TestMakeObserver() {
+	t := s.T()
+	Equal(t, "make:observer UserObserver", "Observer created successfully")
+	assert.True(t, file.Exists("./app/observers/user_observer.go"))
 	assert.True(t, file.Remove("./app"))
 }

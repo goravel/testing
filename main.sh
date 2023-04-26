@@ -8,8 +8,8 @@ mkdir goravel/testing
 cp -r $(ls . | grep -v goravel | xargs) ./goravel/testing
 cp .env ./goravel/testing
 cd goravel
-cp -af ./testing/stubs/* ./
-echo "✅ Copy testing file"
+#cp -af ./testing/stubs/* ./
+#echo "✅ Copy testing file"
 go mod tidy
 echo "✅ go mod"
 echo "Testing"
